@@ -3,15 +3,10 @@
 import { useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid';
 
-
 const PlaygroundPage = () => {
   const [prompt, setPrompt] = useState("")
-
   const [mode, setMode] = useState("conversation")
-
-
   /*
-
    {
       sessionId: '1092830-10298309-109283091823',
       arr: [
@@ -25,19 +20,14 @@ const PlaygroundPage = () => {
         }
       ]
     }
-
   */
 
   const [list, setList] = useState([
-
-   
-
   ])
   
   const [sessionId, setSessionId] = useState("")
 
-  const [arr, setArr] = useState([
-    
+  const [arr, setArr] = useState([ 
   ])
 
   useEffect(() => {
@@ -57,14 +47,10 @@ const PlaygroundPage = () => {
       }      
 
     } else if (arr.length > 1) {
-      //arr!!
-      //...
-
       const cpList = [...list]
       const item = cpList.find(obj => obj.sessionId === sessionId)
       item.arr = arr
       setList(cpList)
-
     }
 
   }, [arr])
@@ -79,13 +65,13 @@ const PlaygroundPage = () => {
   }, [list])
 
   useEffect(() => {
+    //initially load everything from stored cache.
     const storedState = JSON.parse(localStorage.getItem('myState'));
     setList(storedState)
   }, [])
 
-
   const submit = async () => {
-    setMode('conversation')
+    setMode('conversation') //initial -> conversation
     setArr(prev => ([...prev, { type: "prompt", prompt: prompt }]))
     setPrompt("")
 
@@ -102,11 +88,11 @@ const PlaygroundPage = () => {
       setArr(prev => ([...prev, { type: "result", text: message }]))
     } catch (error) {
       console.error('Error sending message:', error);
+      //alert(!)
     }
   }
 
   const loadConversation = (obj) => {
-
     console.log(obj.arr)
     //sessionId
     setSessionId(obj.sessionId)
@@ -114,13 +100,10 @@ const PlaygroundPage = () => {
   }
 
   return <div className="flex bg-gray h-screen">
-    <div className="w-[260px] bg-red-300 overflow-scroll custom-scrollbar">
-
+    <div className="w-[260px] bg-red-300 overflow-scroll">
       <br/>
-
       {
         list.map((obj,index) => {
-
           return <div className="mt-4" onClick={e => loadConversation(obj)}>
             {obj.arr[0].prompt}
             ({obj.arr.length})
