@@ -1,27 +1,92 @@
 "use client"; // This is a client component 👈🏽
 
 import { useState, useEffect } from 'react'
+import { v4 as uuidv4 } from 'uuid';
+
 
 const PlaygroundPage = () => {
   const [prompt, setPrompt] = useState("")
 
   const [mode, setMode] = useState("conversation")
-  const [arr, setArr] = useState([
-    {
-      type: "prompt",
-      prompt: "nice"
-    },
-    {
-      type: "response",
-      text: 'res..'
+
+
+  /*
+
+   {
+      sessionId: '1092830-10298309-109283091823',
+      arr: [
+        {
+          type: "prompt",
+          prompt: "wow impressed...",
+        },
+        {
+          type: "response",
+          text: "alskdjfalksdjf"
+        }
+      ]
     }
+
+  */
+
+  const [list, setList] = useState([
+
+   
+
   ])
+  
+  const [sessionId, setSessionId] = useState("")
+
+  const [arr, setArr] = useState([
+    
+  ])
+
+  useEffect(() => {
+    setSessionId(uuidv4())
+  }, [])
+
+  useEffect(() => {
+    if(arr.length === 1){
+      //add new element to list. 
+      //with session id..
+      const cpList = [...list]
+      const item = cpList.find(obj => obj.sessionId === sessionId)
+      if (item) {
+
+      }else {
+        setList(prev => ([...prev, {sessionId: sessionId, arr: arr}]))
+      }      
+
+    } else if (arr.length > 1) {
+      //arr!!
+      //...
+
+      const cpList = [...list]
+      const item = cpList.find(obj => obj.sessionId === sessionId)
+      item.arr = arr
+      setList(cpList)
+
+    }
+
+  }, [arr])
+  
+  useEffect(() => {
+
+    if (list.length > 0){
+      localStorage.setItem('myState', JSON.stringify(list));
+      //server call to save this cache into real database.!!
+    }
+
+  }, [list])
+
+  useEffect(() => {
+    const storedState = JSON.parse(localStorage.getItem('myState'));
+    setList(storedState)
+  }, [])
+
 
   const submit = async () => {
     setMode('conversation')
-
     setArr(prev => ([...prev, { type: "prompt", prompt: prompt }]))
-
     setPrompt("")
 
     try {
@@ -40,9 +105,29 @@ const PlaygroundPage = () => {
     }
   }
 
+  const loadConversation = (obj) => {
+
+    console.log(obj.arr)
+    //sessionId
+    setSessionId(obj.sessionId)
+    setArr(obj.arr)
+  }
+
   return <div className="flex bg-gray h-screen">
-    <div className="w-[260px] bg-red-300">
-      list
+    <div className="w-[260px] bg-red-300 overflow-scroll custom-scrollbar">
+
+      <br/>
+
+      {
+        list.map((obj,index) => {
+
+          return <div className="mt-4" onClick={e => loadConversation(obj)}>
+            {obj.arr[0].prompt}
+            ({obj.arr.length})
+          </div>
+        })
+      }
+
     </div>
     <div className="flex-1 ">
       <div style={{}} className="bg-black h-full relative">
@@ -76,7 +161,7 @@ const PlaygroundPage = () => {
               arr.map((obj, index) => {
                 if (obj.type === "prompt") {
                   return <div className="bg-gray-600 p-4  " key={index} >
-                    <div style={{ minWidth: 600, maxWidth: 800, margin: 'auto' }} className="relative pb-4">
+                    <div className="m-auto relative pb-4 max-w-[800px] min-w-[600px]">
                       {obj.prompt}
                       <div className="absolute left-[-40px]  top-0 w-[32px] h-[32px] 
                       flex items-center justify-center
@@ -86,7 +171,7 @@ const PlaygroundPage = () => {
                   </div>
                 } else {
                   return <div className="bg-gray-800 p-4" key={index}>
-                    <div style={{ minWidth: 600, maxWidth: 800, margin: 'auto' }} className="relative pb-4">
+                    <div className="m-auto relative pb-4 max-w-[800px] min-w-[600px]">
                     {obj.text}
                     <div className="absolute left-[-40px]  top-0 w-[32px] h-[32px] 
                       flex items-center justify-center
@@ -114,7 +199,7 @@ const PlaygroundPage = () => {
               onClick={submit}
               className={`absolute right-[16px] rounded-md top-[12px] w-[32px] h-[32px]
               transition-all ease-in-out duration-500
-              ${prompt.trim() === '' ? 'bg-red-500' : 'bg-blue-500 w-[34px]'
+              ${prompt.trim() === '' ? '' : 'bg-green-500 w-[60px]'
                 }
               `}
             >s</button>
