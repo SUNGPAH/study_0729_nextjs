@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 
 const PlaygroundPage = () => {
   const [prompt, setPrompt] = useState("")
-  const [message, setMessage] = useState("")
-  const [result, setResult] = useState("")
 
   const [mode, setMode] = useState("initial")
   const [arr, setArr] = useState([
